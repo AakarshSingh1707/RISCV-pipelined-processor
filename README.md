@@ -1,62 +1,79 @@
+RV32I 5‑Stage Pipelined CPU (Basys‑3)
+A classic 5‑stage RV32I pipeline (IF, ID, EX, MEM, WB) with forwarding, load‑use stall, and branch flush, validated via self‑checking testbenches and FPGA bring‑up.
 
+Overview
+Five pipeline stages with hazard detection and forwarding units.
 
-# RV32I CPU —  5-Stage Pipeline (Basys-3)
+Branch resolved in EX; taken branches/jumps flush earlier stages.
 
-FPGA‑proven RV32I cores with self‑checking verification; implements forwarding, stall, and flush; runs a demo program on hardware.
+Hardware demo on Basys‑3: Fibonacci on 7‑segment/LEDs; logic inspected during bring‑up.
 
-## Overview
-- Classic 5‑stage pipeline: IF, ID, EX, MEM, WB.
-- Hazard handling: data forwarding, load‑use stall, branch/jump flush; branch resolved in EX.
-- Hardware demo on Basys‑3: Fibonacci displayed on 7‑segment/LEDs.
+Repository layout
+src/: RTL (alu, regfile, control, imem, dmem, hazard_unit, forwarding_unit, if_id/id_ex/ex_mem/mem_wb regs, top_pipeline).
 
-## Repository layout
-- src/: RTL (alu, regfile, control/decoder, imem, dmem, hazard_unit, forwarding_unit, pipeline_regs).
-- tb/: Self‑checking testbenches and ISA‑level tests.
-- sim/: Scripts and wave configs (e.g., Icarus/Verilator/Questa).
-- fpga/: Top module, XDC constraints, board files, build Tcl.
-- sw/asm/: Minimal RISC‑V programs (fib.S, branches.S, loads.S).
+tb/: Self‑checking testbenches and ISA‑level programs; hazard regressions.
 
-## Features
-- ALU ops: add, sub, and, or, xor, slt, sltu, sll, srl, sra; byte/half/word loads/stores.
-- Branches/jumps with PC select and pipeline flush on taken control transfers.
-- Self‑checking verification for ALU, branch, and load/store paths.
+sim/: Scripts/waves (Icarus/Verilator/Questa); run configs.
 
-## Quick start — FPGA (Basys‑3)
-Tools: Vivado <2025.1>. Board: Basys‑3. Top: <top_basys3.sv>. Constraints: fpga/basys3.xdc.
-- Open project or run: vivado -mode tcl -source fpga/build.tcl
-- Generate bitstream and program board.
-- Demo I/O: 7‑segment shows Fibonacci; LEDs indicate <state/hazard/debug>. Pin map in XDC.
+fpga/: Top, basys3.xdc, build Tcl.
 
-## Design details
-- Datapath: PC, imem, dmem, regfile, ALU, branch unit, pipeline regs.
-- Control: instruction decoder, hazard detection, forwarding, PC select/flush logic.
-- Branch resolution: in EX; flush IF/ID when taken; PC mux chooses target vs PC+4.
+sw/asm/: Directed tests (branches.S, loads.S) and demo (fib.S).
 
-## Hazards
-- Data hazards: EX/MEM→ID/EX forwarding; stall on load‑use when ID consumes MEM read.
-- Control hazards: flush on taken branch/jump; signals: flush_ifid, stall_idex (documented in code).
+Features
+Data hazards: EX/MEM→ID/EX forwarding; load‑use stall insertion.
 
-## Verification
-- Self‑checking TBs compare architectural state (regs/mem) to expected outputs.
-- Directed + ISA tests for branch‑after‑load, back‑to‑back branches, sign‑extended loads.
-- Run: make test; logs in logs/*.log; expect “ALL TESTS PASS”.
+Control hazards: pipeline flush on taken branch/jump; PC select logic.
 
-## Results
-- Hardware: Basys‑3 run shows Fibonacci sequence on 7‑seg/LEDs.
+ALU ops and loads/stores per RV32I; memory alignment enforced.
 
-## Requirements
-- Tools: Vivado <20XX.X>, <Icarus/Verilator/Questa>.
-- Hardware: Basys‑3; optional ZC702 for AXI demo.
+Quick start — Simulation
+Prereqs: <Icarus/Verilator/Questa>, <Make>.
 
-## How to reproduce
-- make clean && make sim  # expect PASS logs in logs/
-- make fpga               # bitstream at fpga/build/<top>.bit
-- Known limits: RV32I subset only; no CSR/interrupts yet.
+Example (Icarus):
 
-## License
-- <MIT/BSD/Apache‑2.0>
+iverilog -g2012 -o build/pipe_tb tb/pipe_tb.sv src/*.sv
 
-## Maintainer
-- Aakarsh Singh — contact: <>.
+vvp build/pipe_tb # expect “ALL TESTS PASS”
+
+make test # runs hazard and ISA regressions, logs in logs/*.log
+
+Quick start — FPGA (Basys‑3)
+Tools: Vivado <20XX.X>, Board: Basys‑3, Top: <top_pipeline.sv>, XDC: fpga/basys3.xdc.
+
+vivado -mode tcl -source fpga/build.tcl
+
+Program bitstream; verify Fibonacci on 7‑seg; LEDs can trace state/hazard signals.
+
+Hazard handling
+Forwarding paths: EX/MEM results bypassed to dependent instructions in ID/EX.
+
+Stall conditions: load‑use when ID consumes MEM read; inserts a bubble.
+
+Flush: on taken branch/jump, IF/ID invalidated; PC updated to target.
+
+Verification
+Self‑checking TBs compare architectural state and memory traces.
+
+Corner cases: branch‑after‑load, back‑to‑back branches, sign‑ext loads, misaligned access traps (if enabled).
+
+Waveforms captured for forwarding/stall events.
+
+Results
+Regression passing on commit <hash>; observed correct forwarding/stall in waves.
+
+Basys‑3 bring‑up validated via LEDs/logic inspection.
+
+Notes and limits
+RV32I subset only; no CSR/interrupts yet; memory system simplified for FPGA demo.
+
+Roadmap
+Add CSR/interrupts, simple cache/MMIO, AXI‑Lite wrapper for Zynq integration.
+
+License
+<MIT/BSD/Apache‑2.0>
+
+Maintainer
+Aakarsh Singh — contact in profile.
+
 
 
