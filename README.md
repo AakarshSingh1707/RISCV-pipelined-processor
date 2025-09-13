@@ -21,13 +21,6 @@ FPGA‑proven RV32I cores with self‑checking verification; implements forwardi
 - Branches/jumps with PC select and pipeline flush on taken control transfers.
 - Self‑checking verification for ALU, branch, and load/store paths.
 
-## Quick start — Simulation
-Prerequisites: <Icarus/Verilator/Questa>, <Make> installed.
-- Example (Icarus):
-  - iverilog -g2012 -o build/alu_tb tb/alu_tb.sv src/alu.sv
-  - vvp build/alu_tb  # expect “TEST PASS”
-- Optional wrapper: make sim
-
 ## Quick start — FPGA (Basys‑3)
 Tools: Vivado <20XX.X>. Board: Basys‑3. Top: <top_basys3.sv>. Constraints: fpga/basys3.xdc.
 - Open project or run: vivado -mode tcl -source fpga/build.tcl
@@ -49,15 +42,10 @@ Tools: Vivado <20XX.X>. Board: Basys‑3. Top: <top_basys3.sv>. Constraints: fpg
 - Run: make test; logs in logs/*.log; expect “ALL TESTS PASS”.
 
 ## Results
-- Simulation: all unit/regression tests pass on commit <hash>.
 - Hardware: Basys‑3 run shows Fibonacci sequence on 7‑seg/LEDs.
 
-## Zynq/AXI (optional)
-- AXI4‑Lite wrapper for memory‑mapped I/O; register bank at <0x4000_0000>; Vitis app read/write demo.
-- Build flow: export hardware, create Vitis workspace, run app, observe ILA/waveform.
-
 ## Requirements
-- Tools: Vivado <20XX.X>, <Icarus/Verilator/Questa>, Make, Python (optional).
+- Tools: Vivado <20XX.X>, <Icarus/Verilator/Questa>.
 - Hardware: Basys‑3; optional ZC702 for AXI demo.
 
 ## How to reproduce
@@ -65,16 +53,10 @@ Tools: Vivado <20XX.X>. Board: Basys‑3. Top: <top_basys3.sv>. Constraints: fpg
 - make fpga               # bitstream at fpga/build/<top>.bit
 - Known limits: RV32I subset only; no CSR/interrupts yet.
 
-## Roadmap
-- CSR/interrupts, AXI4‑Lite integration, simple cache/MMIO, performance counters.
-
 ## License
 - <MIT/BSD/Apache‑2.0>
 
 ## Maintainer
-- Aakarsh Singh — contact: <email/link>.
+- Aakarsh Singh — contact: <>.
 
 
-[8](https://mygit.th-deg.de/sm11312/fpga_final_project/-/blob/ca7a0270d727bf82f28ce2cacd8ea8833a2744e6/README.md)
-[9](https://gitlab.inesctec.pt/agrob/public/custom-dl-model-fpga-zcu104/-/blob/master/README.md)
-[10](https://git.uni-paderborn.de/pc2-ci/fpga/HPCC_FPGA/-/blob/v0.5.1/README.md)
