@@ -22,7 +22,7 @@ FPGA‑proven RV32I cores with self‑checking verification; implements forwardi
 - Self‑checking verification for ALU, branch, and load/store paths.
 
 ## Quick start — FPGA (Basys‑3)
-Tools: Vivado <20XX.X>. Board: Basys‑3. Top: <top_basys3.sv>. Constraints: fpga/basys3.xdc.
+Tools: Vivado <2025.1>. Board: Basys‑3. Top: <top_basys3.sv>. Constraints: fpga/basys3.xdc.
 - Open project or run: vivado -mode tcl -source fpga/build.tcl
 - Generate bitstream and program board.
 - Demo I/O: 7‑segment shows Fibonacci; LEDs indicate <state/hazard/debug>. Pin map in XDC.
