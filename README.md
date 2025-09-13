@@ -1,0 +1,80 @@
+
+
+# RV32I CPU —  5-Stage Pipeline (Basys-3)
+
+FPGA‑proven RV32I cores with self‑checking verification; implements forwarding, stall, and flush; runs a demo program on hardware.
+
+## Overview
+- Classic 5‑stage pipeline: IF, ID, EX, MEM, WB.
+- Hazard handling: data forwarding, load‑use stall, branch/jump flush; branch resolved in EX.
+- Hardware demo on Basys‑3: Fibonacci displayed on 7‑segment/LEDs.
+
+## Repository layout
+- src/: RTL (alu, regfile, control/decoder, imem, dmem, hazard_unit, forwarding_unit, pipeline_regs).
+- tb/: Self‑checking testbenches and ISA‑level tests.
+- sim/: Scripts and wave configs (e.g., Icarus/Verilator/Questa).
+- fpga/: Top module, XDC constraints, board files, build Tcl.
+- sw/asm/: Minimal RISC‑V programs (fib.S, branches.S, loads.S).
+
+## Features
+- ALU ops: add, sub, and, or, xor, slt, sltu, sll, srl, sra; byte/half/word loads/stores.
+- Branches/jumps with PC select and pipeline flush on taken control transfers.
+- Self‑checking verification for ALU, branch, and load/store paths.
+
+## Quick start — Simulation
+Prerequisites: <Icarus/Verilator/Questa>, <Make> installed.
+- Example (Icarus):
+  - iverilog -g2012 -o build/alu_tb tb/alu_tb.sv src/alu.sv
+  - vvp build/alu_tb  # expect “TEST PASS”
+- Optional wrapper: make sim
+
+## Quick start — FPGA (Basys‑3)
+Tools: Vivado <20XX.X>. Board: Basys‑3. Top: <top_basys3.sv>. Constraints: fpga/basys3.xdc.
+- Open project or run: vivado -mode tcl -source fpga/build.tcl
+- Generate bitstream and program board.
+- Demo I/O: 7‑segment shows Fibonacci; LEDs indicate <state/hazard/debug>. Pin map in XDC.
+
+## Design details
+- Datapath: PC, imem, dmem, regfile, ALU, branch unit, pipeline regs.
+- Control: instruction decoder, hazard detection, forwarding, PC select/flush logic.
+- Branch resolution: in EX; flush IF/ID when taken; PC mux chooses target vs PC+4.
+
+## Hazards
+- Data hazards: EX/MEM→ID/EX forwarding; stall on load‑use when ID consumes MEM read.
+- Control hazards: flush on taken branch/jump; signals: flush_ifid, stall_idex (documented in code).
+
+## Verification
+- Self‑checking TBs compare architectural state (regs/mem) to expected outputs.
+- Directed + ISA tests for branch‑after‑load, back‑to‑back branches, sign‑extended loads.
+- Run: make test; logs in logs/*.log; expect “ALL TESTS PASS”.
+
+## Results
+- Simulation: all unit/regression tests pass on commit <hash>.
+- Hardware: Basys‑3 run shows Fibonacci sequence on 7‑seg/LEDs.
+
+## Zynq/AXI (optional)
+- AXI4‑Lite wrapper for memory‑mapped I/O; register bank at <0x4000_0000>; Vitis app read/write demo.
+- Build flow: export hardware, create Vitis workspace, run app, observe ILA/waveform.
+
+## Requirements
+- Tools: Vivado <20XX.X>, <Icarus/Verilator/Questa>, Make, Python (optional).
+- Hardware: Basys‑3; optional ZC702 for AXI demo.
+
+## How to reproduce
+- make clean && make sim  # expect PASS logs in logs/
+- make fpga               # bitstream at fpga/build/<top>.bit
+- Known limits: RV32I subset only; no CSR/interrupts yet.
+
+## Roadmap
+- CSR/interrupts, AXI4‑Lite integration, simple cache/MMIO, performance counters.
+
+## License
+- <MIT/BSD/Apache‑2.0>
+
+## Maintainer
+- Aakarsh Singh — contact: <email/link>.
+
+
+[8](https://mygit.th-deg.de/sm11312/fpga_final_project/-/blob/ca7a0270d727bf82f28ce2cacd8ea8833a2744e6/README.md)
+[9](https://gitlab.inesctec.pt/agrob/public/custom-dl-model-fpga-zcu104/-/blob/master/README.md)
+[10](https://git.uni-paderborn.de/pc2-ci/fpga/HPCC_FPGA/-/blob/v0.5.1/README.md)
