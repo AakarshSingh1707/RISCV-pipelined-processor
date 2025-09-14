@@ -1,3 +1,6 @@
+Demo Video  
+[Watch the project demo here](https://drive.google.com/file/d/1yRITuGxDKUnmVvOb6AkxgjBrZaRl-SAa/view?usp=drive_link) 
+
 RV32I 5‑Stage Pipelined CPU (Basys‑3)
 A classic 5‑stage RV32I pipeline (IF, ID, EX, MEM, WB) with forwarding, load‑use stall, and branch flush, validated via self‑checking testbenches and FPGA bring‑up.
 
