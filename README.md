@@ -11,14 +11,6 @@ Hardware demo on Basys‑3: Fibonacci on 7‑segment/LEDs; logic inspected durin
 Repository layout
 src/: RTL (alu, regfile, control, imem, dmem, hazard_unit, forwarding_unit, if_id/id_ex/ex_mem/mem_wb regs, top_pipeline).
 
-tb/: Self‑checking testbenches and ISA‑level programs; hazard regressions.
-
-sim/: Scripts/waves (Icarus/Verilator/Questa); run configs.
-
-fpga/: Top, basys3.xdc, build Tcl.
-
-sw/asm/: Directed tests (branches.S, loads.S) and demo (fib.S).
-
 Features
 Data hazards: EX/MEM→ID/EX forwarding; load‑use stall insertion.
 
@@ -54,7 +46,7 @@ Flush: on taken branch/jump, IF/ID invalidated; PC updated to target.
 Verification
 Self‑checking TBs compare architectural state and memory traces.
 
-Corner cases: branch‑after‑load, back‑to‑back branches, sign‑ext loads, misaligned access traps (if enabled).
+Corner cases: branch‑after‑load, back‑to‑back branches, sign‑ext loads.
 
 Waveforms captured for forwarding/stall events.
 
